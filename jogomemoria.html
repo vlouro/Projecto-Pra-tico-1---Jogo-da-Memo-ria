@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Teste de Memória</title>
+		<style type="text/css">
+			.barrainicial{
+				width:500px;
+				height: 50px;
+			}
+			
+			.btnjogo{
+				width:100px;
+				height: 40px;
+				background-color:#19c662;
+				border: 3px solid #94e784;
+				color: white;
+			}
+			
+			.quadrado{
+				border: 1px solid gray;
+				margin: 2px 2px 2px 2px;
+			}
+			
+			.quadrado:hover{
+				border-color: blue;
+			}
+			
+			.acerta{
+				border-color: white;
+				border: 1px solid white;
+				margin: 2px 2px 2px 2px;
+			}
+			
+			#tempo{
+				border: 3px dotted #1d860d;
+				width: 303px;
+				margin-bottom: 5px;
+			}
+
+			
+		</style>
+		<script src="jquery.js" type="text/javascript"></script>
+		<script>
+			$(document).ready(function () {
+			
+			//Variáveis
+				var lado, largura;	
+				var imagem = [];
+				var img1 = 0;
+				var img2;
+				var controlar = 0;
+				var tempo;
+				
+				function jogar(lado){
+					desembrulha(lado);
+				}
+				
+			
+				//fazer grelha
+				function desembrulha(lado){
+						imagem = [];
+						$('#jogo').empty();
+						for (i=0; i<=(lado*lado)-1; i++){
+						$('#jogo').append('<img id="imgesc" data-posi="'+i+'" class="quadrado" src="imagens/escondida.png">');
+						}	
+						largura = 70*lado;
+						$('#jogo').css('width',largura);
+
+				//Load das Imagens
+						for (i = 0; i <= ((lado*lado)/2)-1; i++) {
+								imagem.push('imagens/' + i + '.png')
+								imagem.push('imagens/' + i + '.png')
+	
+						};
+					
+						imagem.sort(function(){ return 0.5 - Math.random()});
+						
+				};
+				
+				
+			//Clicar
+
+			function fuiClicado(){
+					var posicao = $(this).data('posi');
+					$(this).attr('src', imagem[posicao]);
+					
+					if(img1 == 0){
+						img1 = $(this).attr('src');
+					}else{
+						img2 = $(this).attr('src');
+						verificar();
+					}
+			};
+			
+
+			//Verificação
+			function verificar(){
+				$('body').off('click', 'img', fuiClicado);
+				var intervalo = setInterval(function(){
+					if(img1 != img2){
+							$('img[src="'+img1+'"]').attr('src','imagens/escondida.png');
+							$('img[src="'+img2+'"]').attr('src','imagens/escondida.png');
+							img1=0;
+							img2=1;
+							clearInterval(intervalo);
+							$('body').on('click', 'img', fuiClicado);
+					}else{
+						if(img1 == img2){
+							$('img[src="'+img1+'"]').removeClass('quadrado');
+							$('img[src="'+img2+'"]').removeClass('quadrado');
+							$('img[src="'+img1+'"]').addClass('acerta');
+							$('img[src="'+img2+'"]').addClass('acerta');
+							controlar = controlar + 1;
+							img1=0;
+							img2=1;
+							clearInterval(intervalo);
+							$('body').on('click', 'img', fuiClicado);
+							ganharperder()
+						}
+					}
+				},600);
+			};
+			
+			
+			//Verificação para ganhar
+			function ganharperder(){
+				if(controlar == ((lado*lado)/2)){
+					$('#jogo').empty();
+					$('#jogo').append('<h1>Ganhou o Jogo</h1>');
+					controlar = 0;
+					clearInterval(contador);
+				}	
+			};
+			
+			
+			//Contador
+			
+			function conta() {
+					if (tempo === 0) {
+						$('#tempo').text('Carregue num dos botões para jogar outra vez');
+						$('#jogo').empty();
+						$('#jogo').append('<h1>Acabou o Tempo</h1>');
+						clearInterval(contador);
+					}
+					tempo = tempo - 1;
+					$('#tempo3').text('Restam:'+tempo+' Segundos');
+					console.log(tempo);
+			}
+
+			var contador = setInterval(conta, 1000);
+			
+			clearInterval(contador);
+			
+			
+			//para clicar
+			$('body').on('click', 'img', fuiClicado);
+					
+
+				//Botoes de jogo
+			$('#j4').click(function(){
+				lado = 4;
+				jogar(lado);
+				tempo = 90;
+				clearInterval(contador);
+				contador = setInterval(conta, 1000);
+			});
+			
+			$('#j6').click(function(){
+				lado = 6;
+				tempo = 180;
+				jogar(lado);
+				clearInterval(contador);
+				contador = setInterval(conta, 1000);
+			});
+			
+			$('#j8').click(function(){
+				lado = 8;
+				tempo = 240;
+				jogar(lado);
+				clearInterval(contador);
+				contador = setInterval(conta, 1000);
+			});
+			
+			
+			});
+		</script>
+	</head>
+	<body>
+	<div id="principal">
+		<div class="barrainicial">
+			<button id="j4" class="btnjogo">Novo Jogo 4x4</button>
+			<button id="j6" class="btnjogo">Novo Jogo 6x6</button>
+			<button id="j8" class="btnjogo">Novo Jogo 8x8</button>
+		</div>
+		
+		
+		<div id="tempo">
+			<label id="tempo3">Carregue num dos botões para Iniciar</label>
+		</div>
+		
+		
+		<div id="jogo">
+		</div>
+	</div>	
+	</body>
+</html>
